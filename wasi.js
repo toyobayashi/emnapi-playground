@@ -1,7 +1,7 @@
 let modulePromise
 
 function runWasi() {
-  let fs, WASI, emnapiCore, emnapiRuntime, root, Worker, wasmInput, workerInput
+  let fs, WASI, emnapiCore, emnapiRuntime, root, Worker, wasmInput, workerInput, memfs, memfsExports
 
   const ENVIRONMENT_IS_NODE =
     typeof process === 'object' && process !== null &&
@@ -24,6 +24,7 @@ function runWasi() {
     root = '/'
     workerInput = './worker.js'
     Worker = globalThis.Worker
+    memfs = globalThis.memfs
 
     const { Volume, createFsFromVolume } = memfs
 
@@ -41,6 +42,9 @@ function runWasi() {
     WASI = globalThis.wasmUtil.WASI
   }
 
+  if (memfs) {
+    memfsExports = Object.entries(memfs)
+  }
   const getType = (value) => {
     if (value === undefined) return 0
     if (value === null) return 1
@@ -73,12 +77,14 @@ function runWasi() {
         return view
       }
       case 6: {
-        if (value.constructor !== Object) {
+        const entry = memfsExports.filter(([k, v]) => v === value.constructor)[0]
+        console.log(entry)
+        if (entry) {
           Object.defineProperty(value, '__constructor__', {
             configurable: true,
             writable: true,
             enumerable: true,
-            value: value.constructor.name
+            value: entry[0]
           })
         }
 
@@ -125,8 +131,8 @@ function runWasi() {
             /**
              * @type {Int32Array}
              * 0..4                    status(int32_t):        21(waiting) 0(success) 1(error)
-             * 5..8                    type(napi_valuetype):   0(undefined) 1(null) 2(boolean) 3(number) 4(string) 6(jsonstring) 9(bigint) -1(unsupported)
-             * 9..16                   payload_size(uint32_t)  <= 1024
+             * 4..8                    type(napi_valuetype):   0(undefined) 1(null) 2(boolean) 3(number) 4(string) 6(jsonstring) 9(bigint) -1(unsupported)
+             * 8..16                   payload_size(uint32_t)  <= 1024
              * 16..16 + payload_size   payload_content
              */
             const { sab, type, payload } = e.data.__fs__
