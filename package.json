@@ -1,0 +1,30 @@
+{
+  "name": "emnapi-playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "rebuild": "npm run rebuild:native && npm run rebuild:wasi && npm run rebuild:emscripten",
+    "rebuild:native": "node-gyp rebuild",
+    "rebuild:wasi": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$WASI_SDK_PATH/share/cmake/wasi-sdk-pthread.cmake -H. -Bcmakebuild/wasm32-wasip1-threads && cmake --build cmakebuild/wasm32-wasip1-threads --clean-first",
+    "rebuild:emscripten": "emcmake cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -H. -Bcmakebuild/wasm32-emscripten && cmake --build cmakebuild/wasm32-emscripten --clean-first",
+    "start:native": "node ./native.js",
+    "start:wasi": "node ./wasi.js",
+    "start:emscripten": "node ./emscripten.js"
+  },
+  "keywords": [],
+  "author": "toyobayashi",
+  "license": "MIT",
+  "devDependencies": {
+    "emnapi": "^1.1.1",
+    "node-gyp": "^10.1.0"
+  },
+  "dependencies": {
+    "@emnapi/core": "^1.1.1",
+    "@emnapi/runtime": "^1.1.1",
+    "@tybys/wasm-util": "^0.8.3",
+    "buffer": "^6.0.3",
+    "memfs-browser": "^4"
+  }
+}
