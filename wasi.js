@@ -13,14 +13,14 @@ function runWasi() {
     WASI = require('node:wasi').WASI
     emnapiCore = require('@emnapi/core')
     emnapiRuntime = require('@emnapi/runtime')
-    wasmInput = fs.readFileSync(require('path').join(__dirname, './cmakebuild/wasm32-wasip1-threads/playground.wasm'))
+    wasmInput = fs.readFileSync(require('path').join(__dirname, './wasi.wasm'))
     workerInput = require('path').join(__dirname, './worker.js')
     root = __dirname
     Worker = require('worker_threads').Worker
   } else {
     emnapiCore = globalThis.emnapiCore
     emnapiRuntime = globalThis.emnapi
-    wasmInput = fetch('./cmakebuild/wasm32-wasip1-threads/playground.wasm')
+    wasmInput = fetch('./wasi.wasm')
     root = '/'
     workerInput = './worker.js'
     Worker = globalThis.Worker

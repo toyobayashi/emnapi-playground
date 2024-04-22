@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "private": true,
+  "gypfile": false,
   "scripts": {
+    "install": "echo ignore node-gyp",
     "rebuild": "npm run rebuild:native && npm run rebuild:wasi && npm run rebuild:emscripten",
     "rebuild:native": "node-gyp rebuild",
     "rebuild:wasi": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$WASI_SDK_PATH/share/cmake/wasi-sdk-pthread.cmake -H. -Bcmakebuild/wasm32-wasip1-threads && cmake --build cmakebuild/wasm32-wasip1-threads --clean-first",
