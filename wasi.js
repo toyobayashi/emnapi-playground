@@ -78,7 +78,7 @@ function runWasi() {
       }
       case 6: {
         const entry = memfsExports.filter(([k, v]) => v === value.constructor)[0]
-        console.log(entry)
+        // console.log(entry)
         if (entry) {
           Object.defineProperty(value, '__constructor__', {
             configurable: true,
@@ -88,9 +88,9 @@ function runWasi() {
           })
         }
 
-        const json = JSON.stringify(value, (key, value) => {
+        const json = JSON.stringify(value, (_, value) => {
           if (typeof value === 'bigint') {
-            return Number(value)
+            return `BigInt(${String(value)})`
           }
           return value
         })

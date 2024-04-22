@@ -83,7 +83,15 @@
           if (type === 3) return new Float64Array(sab, 16, 1)[0]
           if (type === 4) return new TextDecoder().decode(content.slice())
           if (type === 6) {
-            const obj = JSON.parse(new TextDecoder().decode(content.slice()))
+            const obj = JSON.parse(new TextDecoder().decode(content.slice()), (_key, value) => {
+              if (typeof value === 'string') {
+                const matched = value.match(/^BigInt\((-?\d+)\)$/)
+                if (matched && matched[1]) {
+                  return BigInt(matched[1])
+                }
+              }
+              return value
+            })
             if (obj.__constructor__) {
               const ctor = obj.__constructor__
               delete obj.__constructor__
